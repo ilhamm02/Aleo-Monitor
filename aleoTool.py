@@ -5,13 +5,22 @@ args = argparse.ArgumentParser(description='Available Command')
 args.add_argument('start', nargs='?', help='run realtime bot monitoring')
 args.add_argument('status', nargs='?', help='show snarkos status')
 args.add_argument('install', nargs='?', help='install this awesome tool')
-args.add_argument('--rpc', default='3030', required=False, type=int, help='snarkos rpc port (default: 3030)')
-args.add_argument('--ip', default='127.0.0.1', required=False,help='snarkos ip (default: 127.0.0.1) ONLY ON STATUS ARGUMENT')
+args.add_argument('version', nargs='?', help='tool version')
+args.add_argument('--port', default='3030', required=False, type=int, help='snarkos rpc port (default: 3030).')
+args.add_argument('--ip', default='127.0.0.1', required=False,help='snarkos ip (default: 127.0.0.1) ONLY ON STATUS ARGUMENT.')
 args.add_argument('--attempt', default='20', type=int, required=False, help='auto restart when catch up status stuck on same block (default: 20) re-attempt every 10 seconds. ONLY ON START ARGUMENT.')
 arg = args.parse_args()
 
-if arg.start == "install":
-  os.system('pip install colorama requests')
+if arg.start == "version":
+  print("v0.1.0")
+elif arg.start == "install":
+  try:
+    import requests, colorama
+    print("There's nothing to do. You have already installed this tool.")
+  except ModuleNotFoundError:
+    print("Installing dependencies...")
+    os.system('pip install colorama requests > /dev/null 2>&1')
+    print("Installed! Now you are ready to use this tool.")
 elif arg.start == "start":
   try:
     import requests
@@ -22,7 +31,7 @@ elif arg.start == "start":
     sleeping = 1
     attempt = 0
     lastStatus = ""
-    endpoint = "http://127.0.0.1:"+str(arg.rpc)
+    endpoint = "http://127.0.0.1:"+str(arg.port)
     blocksPost = """
     {
       "jsonrpc": "2.0", 
@@ -94,14 +103,14 @@ elif arg.start == "start":
           time.sleep(1)
         except KeyboardInterrupt:
           sys.exit(0)
-  except:
+  except ModuleNotFoundError:
     print(f"You must install this awesone tool first. Type: python3 aleoTool.py install")
 elif arg.start == "status":
   try:
     import requests
     from colorama import Fore, Style
     try:
-      endpoint = "http://"+arg.ip+":"+str(arg.rpc)
+      endpoint = "http://"+arg.ip+":"+str(arg.port)
       statusPost = """
       {
         "jsonrpc": "2.0", 
@@ -137,7 +146,6 @@ elif arg.start == "status":
       x = datetime.strptime(uptime, "%Y-%m-%d %H:%M:%S")
       z = datetime.now()
       uptime = str(z-x).split('.')[0]
-      uptime = uptime.split(':')
       block = stats["result"]["misc"]["block_height"]
       mined = stats["result"]["misc"]["blocks_mined"]
       duplicate = stats["result"]["misc"]["duplicate_blocks"]
@@ -147,22 +155,23 @@ elif arg.start == "status":
         role = "Miner"
       status = info["result"]["is_syncing"]
       numPeers = stats["result"]["connections"]["connected_peers"]
+      disPeers = stats["result"]["connections"]["disconnected_peers"]
       peers = peer["result"]["peers"]
       listening = info["result"]["listening_addr"]
       version = info["result"]["version"]
-      print(f"Uptime: \t {uptime[0]}h{uptime[1]}m{uptime[2]}s")
+      print(f"Uptime: \t {uptime}")
       print(f"Block Height: \t {block}")
       print(f"Block Mined: \t {mined}")
       print(f"Duplicate Block: {duplicate}")
       print(f"Role: \t\t {role}")
       print(f"Syncing: \t {status} \n")
-      print(f"Num. Peers: \t {numPeers}")
-      print(f"Peers: \t\t {peers[0]}")
+      print(f"Num. Peers: \t {numPeers} / {numPeers+disPeers}")
+      print(f"Connected Peers: {peers[0]}")
       for i in peers[1:]:
         print(f"\t\t {i}")
       print(f"\nListening: \t {listening}")
-      print(f"Version: \t {version}")
+      print(f"SnarkOS Version: {version}")
     except requests.exceptions.ConnectionError:
       print(f"{Fore.RED}[ ERROR ]{Style.RESET_ALL} Failed to get snarkos status")
-  except:
+  except ModuleNotFoundError:
     print(f"You must install this awesone tool first. Type: python3 aleoTool.py install")
