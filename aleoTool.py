@@ -8,7 +8,7 @@ args.add_argument('install', nargs='?', help='install this awesome tool')
 args.add_argument('version', nargs='?', help='tool version')
 args.add_argument('--port', default='3030', required=False, type=int, help='snarkos rpc port (default: 3030).')
 args.add_argument('--ip', default='127.0.0.1', required=False,help='snarkos ip (default: 127.0.0.1) ONLY ON STATUS ARGUMENT.')
-args.add_argument('--attempt', default='20', type=int, required=False, help='auto restart when catch up status stuck on same block (default: 20) re-attempt every 10 seconds. ONLY ON START ARGUMENT.')
+args.add_argument('--attempt', default='8', type=int, required=False, help='auto restart when catch up status stuck on same block (default: 20) re-attempt every 10 seconds. ONLY ON START ARGUMENT.')
 arg = args.parse_args()
 
 if arg.start == "version":
