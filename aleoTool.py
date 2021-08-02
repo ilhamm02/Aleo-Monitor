@@ -8,7 +8,7 @@ args.add_argument('install', nargs='?', help='install this awesome tool')
 args.add_argument('version', nargs='?', help='tool version')
 args.add_argument('--port', default='3030', required=False, type=int, help='snarkos rpc port (default: 3030).')
 args.add_argument('--ip', default='127.0.0.1', required=False,help='snarkos ip (default: 127.0.0.1) ONLY ON STATUS ARGUMENT.')
-args.add_argument('--attempt', default='8', type=int, required=False, help='auto restart when catch up status stuck on same block (default: 20) re-attempt every 10 seconds. ONLY ON START ARGUMENT.')
+args.add_argument('--attempt', default='0', type=int, required=False, help='auto restart when catch up status stuck on same block (default: 0 (disables)) re-attempt every 10 seconds. ONLY ON START ARGUMENT.')
 arg = args.parse_args()
 
 if arg.start == "version":
@@ -46,7 +46,8 @@ elif arg.start == "start":
       "method": "getnodeinfo", 
       "params": [] 
     }"""
-
+    if arg.attempt == 0:
+      print(f"{Fore.YELLOW}[ INFO! ]{Style.RESET_ALL} Starting without auto-restart. To use it, use argument '--attempt' or type 'python3 aleoTool.py -h'.")
     while True:
       try:
         get = requests.post(endpoint, data=statusPost)
@@ -66,7 +67,7 @@ elif arg.start == "start":
             attempt = 0
             lastStatus = "synced"
         else:
-          if attempt >= arg.attempt:
+          if attempt >= arg.attempt and arg.attempt != 0:
             os.system('systemctl restart aleod')
             print(f"{Fore.RED}[RESTART]{Style.RESET_ALL} Catching up block {block} too long {now}")
           else:
