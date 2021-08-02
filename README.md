@@ -26,7 +26,7 @@ Duplicate Block: 3363
 Role:            Miner
 Syncing:         False
 
-Num. Peers:      20 / 736
+Num. Peers:      2 / 736
 Connected Peers: 255.255.255.255:4131
                  250.250.250.250:4131
 
