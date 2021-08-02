@@ -31,4 +31,5 @@ Connected Peers: 255.255.255.255:4131
                  250.250.250.250:4131
 
 Listening:       0.0.0.0:4131
-SnarkOS Version: 1.3.10```
+SnarkOS Version: 1.3.10
+```
